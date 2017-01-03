@@ -1,0 +1,74 @@
+{
+  "name": "resolve-plugins-sync",
+  "version": "0.1.0",
+  "description": "Synchronously resolve plugins / transforms / presets just like Babel and Browserify does it, using CommonJS `require` builtin. For example, useful for loading complex configs from `package.json` file.",
+  "repository": "tunnckoCore/resolve-plugins-sync",
+  "author": "Charlike Mike Reagent <@tunnckoCore> (http://i.am.charlike.online)",
+  "precommit.silent": true,
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "lint": "standard --verbose --fix",
+    "pretest": "npm run lint",
+    "test": "npm run coverage",
+    "posttest": "npm run lint:coverage",
+    "coverage": "nyc node test.js",
+    "lint:coverage": "nyc check-coverage --lines 100 --branches 100 --statements 100 --functions 100",
+    "report-coverage": "nyc report --reporter=text-lcov | coveralls",
+    "prerelease": "npm test",
+    "release": "standard-version --sign --no-verify",
+    "precommit": "git add --all",
+    "commit": "git-cz"
+  },
+  "dependencies": {
+    "extend-shallow": "^2.0.1"
+  },
+  "devDependencies": {
+    "commitizen": "^2.9.2",
+    "coveralls": "^2.11.15",
+    "cz-conventional-changelog": "^1.2.0",
+    "mukla": "^0.4.8",
+    "nyc": "^10.0.0",
+    "pre-commit": "^1.2.2",
+    "standard": "^8.6.0",
+    "standard-version": "^4.0.0"
+  },
+  "files": [
+    "index.js",
+    "fixtures/"
+  ],
+  "keywords": [],
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "verb": {
+    "run": true,
+    "toc": {
+      "render": true,
+      "method": "preWrite",
+      "maxdepth": 3,
+      "footer": ""
+    },
+    "layout": "empty",
+    "tasks": [
+      "readme"
+    ],
+    "related": {
+      "list": [
+        "always-done",
+        "minibase",
+        "try-catch-core"
+      ],
+      "highlight": "always-done"
+    },
+    "lint": {
+      "reflinks": true
+    }
+  },
+  "engines": {
+    "node": ">=4",
+    "npm": ">=2"
+  }
+}
