@@ -9,12 +9,6 @@
 
 const extend = require('extend-shallow')
 
-const arrayify = (val) => {
-  if (!val) return []
-  if (Array.isArray(val)) return val
-  return [val]
-}
-
 const resolvePluginsSync = (plugins, opts) => {
   plugins = arrayify(plugins).filter(Boolean)
 
@@ -27,34 +21,13 @@ const resolvePluginsSync = (plugins, opts) => {
   return arrayify(plugins).map((plugin) => {
     // allows `plugins: ['foo', 'bar', 'baz']`
     if (typeof plugin === 'string') {
-      let id = `${opts.prefix}${plugin}`
-      let func = require(id)
-      let argz = opts.args ? opts.args : [opts.first]
-      return func.apply(opts.context, argz)
+      return resolveFromString(opts, plugin)
     }
 
     // allows nesting and passing options to each plugin
     // e.g. `plugins: [ fn, ['foo', {opts: 'here'}], 'bar', quix() ]
     if (Array.isArray(plugin)) {
-      plugin = plugin.filter(Boolean)
-      let second = opts.first ? plugin[1] : undefined
-      let first = opts.first ? opts.first : plugin[1]
-      let args = opts.args ? opts.args : [first, second]
-
-      if (typeof plugin[0] === 'string') {
-        let id = `${opts.prefix}${plugin[0]}`
-        return require(id).apply(opts.context, args)
-      }
-      if (typeof plugin[0] === 'function') {
-        let fn = plugin[0]
-        return fn.apply(opts.context, args)
-      }
-      if (typeof plugin[0] === 'object') {
-        return plugin[0]
-      }
-
-      let msg = 'First item of array should be function, string or object'
-      throw new TypeError(msg)
+      return resolveFromArray(opts, plugin)
     }
 
     // allows `plugins: [fn1, fn2]`
@@ -72,6 +45,41 @@ const resolvePluginsSync = (plugins, opts) => {
     let message = 'Plugin item should be function, string, object or array'
     throw new TypeError(message)
   })
+}
+
+const arrayify = (val) => {
+  if (!val) return []
+  if (Array.isArray(val)) return val
+  return [val]
+}
+
+const resolveFromString = (opts, plugin) => {
+  let id = `${opts.prefix}${plugin}`
+  let func = require(id)
+  let argz = opts.args ? opts.args : [opts.first]
+  return func.apply(opts.context, argz)
+}
+
+const resolveFromArray = (opts, plugin) => {
+  plugin = plugin.filter(Boolean)
+  let second = opts.first ? plugin[1] : undefined
+  let first = opts.first ? opts.first : plugin[1]
+  let args = opts.args ? opts.args : [first, second]
+
+  if (typeof plugin[0] === 'string') {
+    let id = `${opts.prefix}${plugin[0]}`
+    return require(id).apply(opts.context, args)
+  }
+  if (typeof plugin[0] === 'function') {
+    let fn = plugin[0]
+    return fn.apply(opts.context, args)
+  }
+  if (typeof plugin[0] === 'object') {
+    return plugin[0]
+  }
+
+  let msg = 'First item of array should be function, string or object'
+  throw new TypeError(msg)
 }
 
 module.exports = resolvePluginsSync
