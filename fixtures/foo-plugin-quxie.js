@@ -1,14 +1,4 @@
 'use strict'
 
-module.exports = (filename, opts) => {
-  if (typeof filename === 'object') {
-    opts = filename
-    filename = undefined
-  }
-  return {
-    name: 'quxie',
-    body: 'bazzy bear',
-    opts: opts,
-    filename: filename
-  }
-}
+const support = require('./support')
+module.exports = support('quxie', 'bazzy bear')
