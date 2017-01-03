@@ -142,14 +142,16 @@ test('8. opts.first for browserify-style transforms where 1st is `filename`, 2nd
 
 test('9. if passed opts.args respect it more than per plugin options', function (done) {
   const ret = resolve([
-    [towie, { x: 'b' }]
+    [towie, { x: 'b' }],
+    './fixtures/foo-plugin-one'
   ], {
     args: ['haha', { hello: 'world' }]
   })
 
-  test.strictEqual(ret.length, 1)
+  test.strictEqual(ret.length, 2)
+
   test.strictEqual(ret[0].name, 'two')
-  test.strictEqual(ret[0].filename, 'haha')
-  test.strictEqual(ret[0].opts.hello, 'world')
+  test.strictEqual(ret[0].filename, ret[1].filename)
+  test.strictEqual(ret[0].opts.hello, ret[1].opts.hello)
   done()
 })

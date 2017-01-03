@@ -22,13 +22,15 @@ const resolvePluginsSync = (plugins, opts) => {
     return []
   }
 
-  opts = extend({ prefix: '', first: false }, opts)
+  opts = extend({ prefix: '' }, opts)
 
   return arrayify(plugins).map((plugin) => {
     // allows `plugins: ['foo', 'bar', 'baz']`
     if (typeof plugin === 'string') {
       let id = `${opts.prefix}${plugin}`
-      return require(id)(opts.first)
+      let func = require(id)
+      let argz = opts.args ? opts.args : [opts.first]
+      return func.apply(opts.context, argz)
     }
 
     // allows nesting and passing options to each plugin
@@ -41,11 +43,11 @@ const resolvePluginsSync = (plugins, opts) => {
 
       if (typeof plugin[0] === 'string') {
         let id = `${opts.prefix}${plugin[0]}`
-        return require(id).apply(opts.thisArg, args)
+        return require(id).apply(opts.context, args)
       }
       if (typeof plugin[0] === 'function') {
         let fn = plugin[0]
-        return fn.apply(opts.thisArg, args)
+        return fn.apply(opts.context, args)
       }
       if (typeof plugin[0] === 'object') {
         return plugin[0]
