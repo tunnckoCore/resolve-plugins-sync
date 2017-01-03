@@ -22,26 +22,30 @@ const resolvePluginsSync = (plugins, opts) => {
     return []
   }
 
-  opts = extend({ prefix: '' }, opts)
+  opts = extend({ prefix: '', first: false }, opts)
 
   return arrayify(plugins).map((plugin) => {
     // allows `plugins: ['foo', 'bar', 'baz']`
     if (typeof plugin === 'string') {
       let id = `${opts.prefix}${plugin}`
-      return require(id)()
+      return require(id)(opts.first)
     }
 
     // allows nesting and passing options to each plugin
     // e.g. `plugins: [ fn, ['foo', {opts: 'here'}], 'bar', quix() ]
     if (Array.isArray(plugin)) {
       plugin = plugin.filter(Boolean)
+      let second = opts.first ? plugin[1] : undefined
+      let first = opts.first ? opts.first : plugin[1]
+      let args = opts.args ? opts.args : [first, second]
+
       if (typeof plugin[0] === 'string') {
         let id = `${opts.prefix}${plugin[0]}`
-        return require(id)(plugin[1])
+        return require(id).apply(opts.thisArg, args)
       }
       if (typeof plugin[0] === 'function') {
         let fn = plugin[0]
-        return fn(plugin[1])
+        return fn.apply(opts.thisArg, args)
       }
       if (typeof plugin[0] === 'object') {
         return plugin[0]
@@ -53,7 +57,7 @@ const resolvePluginsSync = (plugins, opts) => {
 
     // allows `plugins: [fn1, fn2]`
     if (typeof plugin === 'function') {
-      return plugin()
+      return plugin.apply(opts.context, opts.args)
     }
 
     // just pass to the tool, like Rollup expect each plugin

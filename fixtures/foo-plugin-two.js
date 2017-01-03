@@ -1,9 +1,14 @@
 'use strict'
 
-module.exports = (opts) => {
+module.exports = (filename, opts) => {
+  if (typeof filename === 'object') {
+    opts = filename
+    filename = undefined
+  }
   return {
     name: 'two',
     body: 'foo bar',
-    opts: opts
+    opts: opts,
+    filename: filename
   }
 }
