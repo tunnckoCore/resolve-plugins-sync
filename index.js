@@ -19,7 +19,7 @@ const resolvePluginsSync = (plugins, opts) => {
   opts = extend({ prefix: '' }, opts)
 
   return arrayify(plugins).map((plugin) => {
-    // allows `plugins: ['foo', 'bar', 'baz']`
+    // e.g. `plugins: ['foo', 'bar', 'baz']`
     if (typeof plugin === 'string') {
       return resolveFromString(opts, plugin)
     }
@@ -30,7 +30,7 @@ const resolvePluginsSync = (plugins, opts) => {
       return resolveFromArray(opts, plugin)
     }
 
-    // allows `plugins: [fn1, fn2]`
+    // e.g. `plugins: [fn1, fn2]`
     if (typeof plugin === 'function') {
       return plugin.apply(opts.context, opts.args)
     }
@@ -66,14 +66,17 @@ const resolveFromArray = (opts, plugin) => {
   let first = opts.first ? opts.first : plugin[1]
   let args = opts.args ? opts.args : [first, second]
 
+  // e.g. `plugins: [ ['foo'], ['bar', opts] ]`
   if (typeof plugin[0] === 'string') {
     let id = `${opts.prefix}${plugin[0]}`
     return require(id).apply(opts.context, args)
   }
+  // e.g. `plugins: [ [fn], [fn, opts] ]`
   if (typeof plugin[0] === 'function') {
     let fn = plugin[0]
     return fn.apply(opts.context, args)
   }
+  // e.g. `plugins: [{ name: 'plugin-name', transform: fn }, { name: 'foo' }]`
   if (typeof plugin[0] === 'object') {
     return plugin[0]
   }
