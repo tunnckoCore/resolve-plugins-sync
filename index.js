@@ -9,6 +9,54 @@
 
 const extend = require('extend-shallow')
 
+/**
+ * > Babel/Browserify-style resolve of a `plugins` array
+ * and optional `opts` options object, where
+ * each "plugin" (item in the array) can be
+ * 1) string, 2) function, 3) object or 4) array.
+ * Useful for loading complex and meaningful configs like
+ * exactly all of them - Babel, ESLint, Browserify. It would
+ * be great if they use that package one day :)
+ * The [rolldown][] bundler already using it as default
+ * resolution for resolving [rollup][] plugins. :)
+ *
+ * **Example**
+ *
+ * ```js
+ * const resolve = require('resolve-plugins-sync')
+ *
+ * // fake
+ * const baz = require('tool-plugin-baz')
+ * const qux = require('tool-plugin-qux')
+ *
+ * resolve([
+ *   'foo',
+ *   ['bar', { some: 'options here' }],
+ *   [baz, { a: 'b' }],
+ *   qux
+ * ], {
+ *   prefix: 'tool-plugin-'
+ * })
+ * ```
+ *
+ * @name   resolvePluginsSync
+ * @param  {Array|String} `plugins` array of "plugins/transforms/presets" or single string,
+ *                                  which is arrayified so returned `result`
+ *                                  is always an array
+ * @param  {Object} `opts` optional custom configuration
+ * @param  {String} `opts.prefix` useful like `babel-plugin-` or `rollup-plugin-`
+ * @param  {Any} `opts.context` custom context to be passed to plugin function,
+ *                              using the `.apply` method
+ * @param  {Any} `opts.first` pass first argument for plugin function, if it is
+ *                            given, then it will pass plugin options as 2nd argument,
+ *                            that's useful for browserify-like transforms where
+ *                            first argument is `filename`, second is transform `options`
+ * @param  {Array} `opts.args` pass custom arguments to the resolved plugin function,
+ *                             if given - respected more than `opts.first`
+ * @return {Array} `result` resolved plugins, always an array
+ * @api public
+ */
+
 const resolvePluginsSync = (plugins, opts) => {
   plugins = arrayify(plugins).filter(Boolean)
 
@@ -47,11 +95,46 @@ const resolvePluginsSync = (plugins, opts) => {
   })
 }
 
+/**
+ * > Make an array from any value.
+ *
+ * @param  {Any} `val`
+ * @return {Array}
+ * @api private
+ */
+
 const arrayify = (val) => {
   if (!val) return []
   if (Array.isArray(val)) return val
   return [val]
 }
+
+/**
+ * > Resolve a plugin from string. Below
+ * example uses `rollup` plugins. Will find the
+ * plugin if installed, require it and call it
+ * without options been passed.
+ *
+ * **Example**
+ *
+ * ```js
+ * const resolve = require('resolve-plugins-sync')
+ * const plugins = [
+ *   'commonjs',
+ *   'node-resolve',
+ *   'buble'
+ * ]
+ *
+ * const result = resolve(plugins, {
+ *   prefix: 'rollup-plugin-'
+ * })
+ * console.log(result) // => Array of objects
+ * ```
+ *
+ * @param  {Object} `opts`
+ * @return {String} `plugin`
+ * @api private
+ */
 
 const resolveFromString = (opts, plugin) => {
   let id = `${opts.prefix}${plugin}`
@@ -59,6 +142,43 @@ const resolveFromString = (opts, plugin) => {
   let argz = opts.args ? opts.args : [opts.first]
   return func.apply(opts.context, argz)
 }
+
+/**
+ * > Resolve a plugin from array. Below
+ * example uses `rollup` plugins. Will find the
+ * plugin if installed, require it and call it
+ * with given options.
+ *
+ * First argument of the array
+ * can be string (name of the plugin without the prefix)
+ * or directly the plugin function.
+ *
+ * Second argument is optional, but can be `options`
+ * object which will be passed to the resolved plugin.
+ *
+ * Very much how Babel and Browserify resolves their
+ * transforms, presets and plugins.
+ *
+ * **Example**
+ *
+ * ```js
+ * const resolve = require('resolve-plugins-sync')
+ * const plugins = [
+ *   'commonjs',
+ *   ['node-resolve', { jsnext: true }],
+ *   [buble, { target: { node: '4' } }]
+ * ]
+ *
+ * const result = resolve(plugins, {
+ *   prefix: 'rollup-plugin-'
+ * })
+ * console.log(result) // => Array of objects
+ * ```
+ *
+ * @param  {Object} `opts`
+ * @return {String} `plugin`
+ * @api private
+ */
 
 const resolveFromArray = (opts, plugin) => {
   plugin = plugin.filter(Boolean)

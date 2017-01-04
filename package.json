@@ -74,9 +74,13 @@
       "commitizen",
       "dezalgo",
       "once",
+      "rolldown",
+      "rollup",
       "standard-version",
       "verb",
-      "verb-generate-readme"
+      "verb-generate-readme",
+      "babel",
+      "browserify"
     ]
   },
   "engines": {

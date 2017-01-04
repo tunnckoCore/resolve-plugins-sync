@@ -14,7 +14,11 @@ You might also be interested in [always-done](https://github.com/hybridables/alw
 ## Table of Contents
 - [Install](#install)
 - [Usage](#usage)
+- [Background](#background)
+  * [What and Why?](#what-and-why)
+  * [Resolution](#resolution)
 - [API](#api)
+  * [resolvePluginsSync](#resolvepluginssync)
 - [Related](#related)
 - [Contributing](#contributing)
 - [Building docs](#building-docs)
@@ -42,9 +46,146 @@ $ yarn add resolve-plugins-sync
 
 ```js
 const resolvePluginsSync = require('resolve-plugins-sync')
+
+// fake
+const baz = require('tool-plugin-baz')
+const qux = require('tool-plugin-qux')
+
+const result = resolvePluginsSync([
+  'foo',
+  ['bar', { some: 'options here' }],
+  [baz, { a: 'b' }],
+  qux
+], {
+  prefix: 'tool-plugin-'
+})
 ```
 
+## Background
+
+### What and Why?
+Because we need. Because many famous tools do exact same thing. They use same kind
+of resolution of their presets, plugins, transforms and whatever you wanna call it.
+This one is pretty configurable and small. Most of this resolution can be seen in the
+users `package.json`s configs.
+
+For example `browserify.transform` field in package.json
+
+```json
+{
+  "browserify": {
+    "transform": [
+      "babel",
+      ["uglifyify", {
+        "compress": true
+      }]
+    ]
+  }
+}
+```
+
+And because both [babel][] and [browserify][] uses same resolution things may gone more wild.
+
+Let's take this example
+
+```json
+{
+  "browserify": {
+    "transform": [
+      ["babel", {
+        "presets": [
+          ["es2015", {
+            "modules": false
+          }]
+        ],
+        "plugins": [
+          ["react", { "some": "more options" }]
+          "add-module-exports"
+        ]
+      }],
+      ["uglifyify", {
+        "compress": true
+      }]
+    ]
+  }
+}
+```
+
+And so on, and so on... infinite nesting. That's just freaking crazy, right?
+
+That's all about wat this package does - you give it an array and it does such thing - in case with Browserify if they use this package they should pass `browserify.transform` as first argument.
+
+It's so customizable that it match to all their needs - both for Babel plugins/presets/transforms and Browserify transforms. The [browserify][] transforms are a bit different by all others. They accept `filename, options` signature. And so, because they don't accept `options` as first argument, like Babel's transforms or like Rollup's plugins, we need a bit configuration to make things work for Browserify.
+
+That's why this package has `opts` object.
+
+***
+
+TBC
+
+***
+
+### Resolution
+
+_**to be udpated**_
+
+***
+
+**1)** If item is `string`, it tries to require it from
+locally installed dependencies, calls it and you can pass
+a `opts.prefix` which will be prepended to the item string.
+Think for it like `rollup-plugin-`, `babel-plugin-`, `gulp-`
+and etc. You may want to see below comments for the `resolveFromString`.
+
+**2)** If item is `function`, it will call it and if you
+want to pass arguments to it you can pass `opts.args` array
+or `opts.first`. If `opts.args` is passed it calls the
+item function with `.apply`. If `opts.first` is passed
+it will pass it as first argument to that function.
+
+**3)** If item is `object`, nothing happens, it just returns it
+in the `result` array.
+
+**4)** If item is `array`, then there are few possible
+scenarios (see comments for `resolveFromArray`):
+  - if 1st argument is string - see 1
+  - if 1st argument is function - see 2
+  - if 2nd argument is object it will be passed to
+  that resolve function from 1st argument
+
 ## API
+
+### [resolvePluginsSync](index.js#L60)
+> Babel/Browserify-style resolve of a `plugins` array and optional `opts` options object, where each "plugin" (item in the array) can be 1) string, 2) function, 3) object or 4) array. Useful for loading complex and meaningful configs like exactly all of them - Babel, ESLint, Browserify. It would be great if they use that package one day :) The [rolldown][] bundler already using it as default resolution for resolving [rollup][] plugins. :)
+
+**Params**
+
+* `plugins` **{Array|String}**: array of "plugins/transforms/presets" or single string, which is arrayified so returned `result` is always an array    
+* `opts` **{Object}**: optional custom configuration    
+* `opts.prefix` **{String}**: useful like `babel-plugin-` or `rollup-plugin-`    
+* `opts.context` **{Any}**: custom context to be passed to plugin function, using the `.apply` method    
+* `opts.first` **{Any}**: pass first argument for plugin function, if it is given, then it will pass plugin options as 2nd argument, that's useful for browserify-like transforms where first argument is `filename`, second is transform `options`    
+* `opts.args` **{Array}**: pass custom arguments to the resolved plugin function, if given - respected more than `opts.first`    
+* `returns` **{Array}** `result`: resolved plugins, always an array  
+
+**Example**
+
+```js
+const resolve = require('resolve-plugins-sync')
+
+// fake
+const baz = require('tool-plugin-baz')
+const qux = require('tool-plugin-qux')
+
+resolve([
+  'foo',
+  ['bar', { some: 'options here' }],
+  [baz, { a: 'b' }],
+  qux
+], {
+  prefix: 'tool-plugin-'
+})
+```
 
 ## Related
 - [always-done](https://www.npmjs.com/package/always-done): Handle completion and errors with elegance! Support for streams, callbacks, promises, child processes, async/await and sync functions. A drop-in replacement… [more](https://github.com/hybridables/always-done#readme) | [homepage](https://github.com/hybridables/always-done#readme "Handle completion and errors with elegance! Support for streams, callbacks, promises, child processes, async/await and sync functions. A drop-in replacement for [async-done][] - pass 100% of its tests plus more")
@@ -93,8 +234,23 @@ Copyright © 2016-2017, [Charlike Mike Reagent](http://i.am.charlike.online). Re
 
 ***
 
-_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.2.3, on January 03, 2017._  
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.2.3, on January 04, 2017._  
 _Project scaffolded using [charlike][] cli._
+
+[always-done]: https://github.com/hybridables/always-done
+[async-done]: https://github.com/gulpjs/async-done
+[babel]: https://babeljs.io/
+[base]: https://github.com/node-base/base
+[browserify]: https://github.com/substack/node-browserify
+[charlike]: https://github.com/tunnckocore/charlike
+[commitizen]: https://github.com/commitizen/cz-cli
+[dezalgo]: https://github.com/npm/dezalgo
+[once]: https://github.com/isaacs/once
+[rolldown]: https://github.com/rolldown/rolldown
+[rollup]: https://github.com/rollup/rollup
+[standard-version]: https://github.com/conventional-changelog/standard-version
+[verb-generate-readme]: https://github.com/verbose/verb-generate-readme
+[verb]: https://github.com/verbose/verb
 
 [downloads-url]: https://www.npmjs.com/package/resolve-plugins-sync
 [downloads-img]: https://img.shields.io/npm/dt/resolve-plugins-sync.svg
@@ -117,13 +273,3 @@ _Project scaffolded using [charlike][] cli._
 [standard-url]: https://github.com/feross/standard
 [standard-img]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg
 
-[always-done]: https://github.com/hybridables/always-done
-[async-done]: https://github.com/gulpjs/async-done
-[base]: https://github.com/node-base/base
-[charlike]: https://github.com/tunnckocore/charlike
-[commitizen]: https://github.com/commitizen/cz-cli
-[dezalgo]: https://github.com/npm/dezalgo
-[once]: https://github.com/isaacs/once
-[standard-version]: https://github.com/conventional-changelog/standard-version
-[verb-generate-readme]: https://github.com/verbose/verb-generate-readme
-[verb]: https://github.com/verbose/verb
