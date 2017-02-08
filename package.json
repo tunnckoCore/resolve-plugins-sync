@@ -37,7 +37,30 @@
     "index.js",
     "fixtures/"
   ],
-  "keywords": [],
+  "keywords": [
+    "browserify",
+    "cfg",
+    "complex",
+    "config",
+    "config-management",
+    "configuration",
+    "load",
+    "load-config",
+    "load-plugin",
+    "load-transform",
+    "manage",
+    "management",
+    "plugin",
+    "plugins",
+    "presets",
+    "resolve",
+    "resolver",
+    "resolving",
+    "sync",
+    "synchronous",
+    "transform",
+    "transforms"
+  ],
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
@@ -90,7 +113,10 @@
   "eslintConfig": {
     "extends": "standard",
     "rules": {
-      "semi": [2, "never"],
+      "semi": [
+        2,
+        "never"
+      ],
       "no-extra-semi": 2
     }
   }
