@@ -2,11 +2,11 @@
 
 > Synchronously resolve plugins / transforms / presets just like Babel and Browserify does it, using CommonJS `require` builtin. For example, useful for loading complex configs from `package.json` file.
 
-[![code climate][codeclimate-img]][codeclimate-url] 
-[![standard code style][standard-img]][standard-url] 
-[![linux build status][travis-img]][travis-url] 
-[![windows build status][appveyor-img]][appveyor-url] 
-[![coverage status][coveralls-img]][coveralls-url] 
+[![code climate][codeclimate-img]][codeclimate-url]
+[![standard code style][standard-img]][standard-url]
+[![linux build status][travis-img]][travis-url]
+[![windows build status][appveyor-img]][appveyor-url]
+[![coverage status][coveralls-img]][coveralls-url]
 [![dependency status][david-img]][david-url]
 
 You might also be interested in [always-done](https://github.com/hybridables/always-done#readme).
@@ -18,7 +18,6 @@ You might also be interested in [always-done](https://github.com/hybridables/alw
   * [What and Why?](#what-and-why)
   * [Resolution](#resolution)
 - [API](#api)
-  * [resolvePluginsSync](#resolvepluginssync)
 - [Related](#related)
 - [Contributing](#contributing)
 - [Building docs](#building-docs)
@@ -113,33 +112,25 @@ Let's take this example
 
 And so on, and so on... infinite nesting. That's just freaking crazy, right?
 
-That's all about wat this package does - you give it an array and it does such thing - in case with Browserify if they use this package they should pass `browserify.transform` as first argument.
+That's all about what this package does - you give it an array and it does such thing - in case with Browserify if they use this package they should pass `browserify.transform` as first argument.
 
 It's so customizable that it match to all their needs - both for Babel plugins/presets/transforms and Browserify transforms. The [browserify][] transforms are a bit different by all others. They accept `filename, options` signature. And so, because they don't accept `options` as first argument, like Babel's transforms or like Rollup's plugins, we need a bit configuration to make things work for Browserify.
 
-That's why this package has `opts` object.
-
-***
-
-TBC
-
-***
+That's why this package has `opts` object through which you can pass `opts.first` to set first argument for the plugin/transform function. Another thing that you can do is to pass `opts.args` if you want more control over the passed arguments to the plugin/transform function.
 
 ### Resolution
 
-_**to be udpated**_
-
-***
+How we resolve plugins? Resolving algorithm has 4 steps. You should know that in the following paragraphs `item` means each element in the passed array to `resolvePluginsSync()`.
 
 **1)** If item is `string`, it tries to require it from
 locally installed dependencies, calls it and you can pass
 a `opts.prefix` which will be prepended to the item string.
 Think for it like `rollup-plugin-`, `babel-plugin-`, `gulp-`
-and etc. You may want to see below comments for the `resolveFromString`.
+and etc. You may want to see the comments for `resolveFromString` inside the source code.
 
 **2)** If item is `function`, it will call it and if you
 want to pass arguments to it you can pass `opts.args` array
-or `opts.first`. If `opts.args` is passed it calls the
+or `opts.first`. If `opts.args` is passed it calls that
 item function with `.apply`. If `opts.first` is passed
 it will pass it as first argument to that function.
 
@@ -147,45 +138,13 @@ it will pass it as first argument to that function.
 in the `result` array.
 
 **4)** If item is `array`, then there are few possible
-scenarios (see comments for `resolveFromArray`):
+scenarios (see comments for `resolveFromArray` inside the source code):
   - if 1st argument is string - see 1
   - if 1st argument is function - see 2
   - if 2nd argument is object it will be passed to
   that resolve function from 1st argument
 
 ## API
-
-### [resolvePluginsSync](index.js#L60)
-> Babel/Browserify-style resolve of a `plugins` array and optional `opts` options object, where each "plugin" (item in the array) can be 1) string, 2) function, 3) object or 4) array. Useful for loading complex and meaningful configs like exactly all of them - Babel, ESLint, Browserify. It would be great if they use that package one day :) The [rolldown][] bundler already using it as default resolution for resolving [rollup][] plugins. :)
-
-**Params**
-
-* `plugins` **{Array|String}**: array of "plugins/transforms/presets" or single string, which is arrayified so returned `result` is always an array    
-* `opts` **{Object}**: optional custom configuration    
-* `opts.prefix` **{String}**: useful like `babel-plugin-` or `rollup-plugin-`    
-* `opts.context` **{Any}**: custom context to be passed to plugin function, using the `.apply` method    
-* `opts.first` **{Any}**: pass first argument for plugin function, if it is given, then it will pass plugin options as 2nd argument, that's useful for browserify-like transforms where first argument is `filename`, second is transform `options`    
-* `opts.args` **{Array}**: pass custom arguments to the resolved plugin function, if given - respected more than `opts.first`    
-* `returns` **{Array}** `result`: resolved plugins, always an array  
-
-**Example**
-
-```js
-const resolve = require('resolve-plugins-sync')
-
-// fake
-const baz = require('tool-plugin-baz')
-const qux = require('tool-plugin-qux')
-
-resolve([
-  'foo',
-  ['bar', { some: 'options here' }],
-  [baz, { a: 'b' }],
-  qux
-], {
-  prefix: 'tool-plugin-'
-})
-```
 
 ## Related
 - [always-done](https://www.npmjs.com/package/always-done): Handle completion and errors with elegance! Support for streams, callbacks, promises, child processes, async/await and sync functions. A drop-in replacement… [more](https://github.com/hybridables/always-done#readme) | [homepage](https://github.com/hybridables/always-done#readme "Handle completion and errors with elegance! Support for streams, callbacks, promises, child processes, async/await and sync functions. A drop-in replacement for [async-done][] - pass 100% of its tests plus more")
@@ -226,7 +185,7 @@ $ npm install && npm test
 **Charlike Mike Reagent**
 
 + [github/tunnckoCore](https://github.com/tunnckoCore)
-+ [twitter/tunnckoCore](http://twitter.com/tunnckoCore)
++ [twitter/tunnckoCore](https://twitter.com/tunnckoCore)
 + [codementor/tunnckoCore](https://codementor.io/tunnckoCore)
 
 ## License
@@ -234,7 +193,7 @@ Copyright © 2016-2017, [Charlike Mike Reagent](http://i.am.charlike.online). Re
 
 ***
 
-_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.2.3, on January 04, 2017._  
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.4.1, on February 08, 2017._  
 _Project scaffolded using [charlike][] cli._
 
 [always-done]: https://github.com/hybridables/always-done

@@ -40,10 +40,10 @@ const extend = require('extend-shallow')
  * ```
  *
  * @name   resolvePluginsSync
- * @param  {Array|String} `plugins` array of "plugins/transforms/presets" or single string,
+ * @param  {Array|String} [plugins] array of "plugins/transforms/presets" or single string,
  *                                  which is arrayified so returned `result`
  *                                  is always an array
- * @param  {Object} `opts` optional custom configuration
+ * @param  {Object} opts optional custom configuration
  * @param  {String} `opts.prefix` useful like `babel-plugin-` or `rollup-plugin-`
  * @param  {Any} `opts.context` custom context to be passed to plugin function,
  *                              using the `.apply` method
@@ -54,7 +54,7 @@ const extend = require('extend-shallow')
  * @param  {Array} `opts.args` pass custom arguments to the resolved plugin function,
  *                             if given - respected more than `opts.first`
  * @return {Array} `result` resolved plugins, always an array
- * @api public
+ * @public
  */
 
 const resolvePluginsSync = (plugins, opts) => {
@@ -98,12 +98,12 @@ const resolvePluginsSync = (plugins, opts) => {
 /**
  * > Make an array from any value.
  *
- * @param  {Any} `val`
+ * @param  {Any} `val` some long description
  * @return {Array}
  * @api private
  */
 
-const arrayify = (val) => {
+let arrayify = (val) => {
   if (!val) return []
   if (Array.isArray(val)) return val
   return [val]
