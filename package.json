@@ -3,7 +3,7 @@
   "version": "0.2.1",
   "description": "Synchronously resolve plugins / transforms / presets just like Babel and Browserify does it, using CommonJS `require` builtin. For example, useful for loading complex configs from `package.json` file.",
   "repository": "tunnckoCore/resolve-plugins-sync",
-  "author": "Charlike Mike Reagent <@tunnckoCore> (http://i.am.charlike.online)",
+  "author": "Charlike Mike Reagent <@tunnckoCore> (https://i.am.charlike.online)",
   "precommit.silent": true,
   "main": "index.js",
   "license": "MIT",
