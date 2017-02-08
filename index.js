@@ -54,7 +54,7 @@ const extend = require('extend-shallow')
  * @param  {Array} `opts.args` pass custom arguments to the resolved plugin function,
  *                             if given - respected more than `opts.first`
  * @return {Array} `result` resolved plugins, always an array
- * @public
+ * @api public
  */
 
 const resolvePluginsSync = (plugins, opts) => {

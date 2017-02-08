@@ -18,6 +18,7 @@ You might also be interested in [always-done](https://github.com/hybridables/alw
   * [What and Why?](#what-and-why)
   * [Resolution](#resolution)
 - [API](#api)
+  * [resolvePluginsSync](#resolvepluginssync)
 - [Related](#related)
 - [Contributing](#contributing)
 - [Building docs](#building-docs)
@@ -145,6 +146,38 @@ scenarios (see comments for `resolveFromArray` inside the source code):
   that resolve function from 1st argument
 
 ## API
+
+### [resolvePluginsSync](index.js#L60)
+> Babel/Browserify-style resolve of a `plugins` array and optional `opts` options object, where each "plugin" (item in the array) can be 1) string, 2) function, 3) object or 4) array. Useful for loading complex and meaningful configs like exactly all of them - Babel, ESLint, Browserify. It would be great if they use that package one day :) The [rolldown][] bundler already using it as default resolution for resolving [rollup][] plugins. :)
+
+**Params**
+
+* **{Array|String}**: array of "plugins/transforms/presets" or single string, which is arrayified so returned `result` is always an array    
+* **{Object}**: opts optional custom configuration    
+* `opts.prefix` **{String}**: useful like `babel-plugin-` or `rollup-plugin-`    
+* `opts.context` **{Any}**: custom context to be passed to plugin function, using the `.apply` method    
+* `opts.first` **{Any}**: pass first argument for plugin function, if it is given, then it will pass plugin options as 2nd argument, that's useful for browserify-like transforms where first argument is `filename`, second is transform `options`    
+* `opts.args` **{Array}**: pass custom arguments to the resolved plugin function, if given - respected more than `opts.first`    
+* `returns` **{Array}** `result`: resolved plugins, always an array  
+
+**Example**
+
+```js
+const resolve = require('resolve-plugins-sync')
+
+// fake
+const baz = require('tool-plugin-baz')
+const qux = require('tool-plugin-qux')
+
+resolve([
+  'foo',
+  ['bar', { some: 'options here' }],
+  [baz, { a: 'b' }],
+  qux
+], {
+  prefix: 'tool-plugin-'
+})
+```
 
 ## Related
 - [always-done](https://www.npmjs.com/package/always-done): Handle completion and errors with elegance! Support for streams, callbacks, promises, child processes, async/await and sync functions. A drop-in replacement… [more](https://github.com/hybridables/always-done#readme) | [homepage](https://github.com/hybridables/always-done#readme "Handle completion and errors with elegance! Support for streams, callbacks, promises, child processes, async/await and sync functions. A drop-in replacement for [async-done][] - pass 100% of its tests plus more")
