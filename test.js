@@ -150,3 +150,41 @@ test('10. should allow to resolve object when item is string', (done) => {
   test.deepStrictEqual(res[0], { name: 'quxie-foo', boogie: 'haha' })
   done()
 })
+
+test('11. load real eslint configs', (done) => {
+  const res = resolve(
+    [
+      'standard-tunnckocore',
+      'eslint-config-standard',
+      ['standard-jsx'],
+      'standard-react',
+      // todo: uncomment when `get-installed-path` #22 & `global-modules` #8
+      // 'airbnb-base',
+    ],
+    {
+      prefix: 'eslint-config-',
+    }
+  )
+
+  // todo: uncomment when support Yarn Global
+  // test.strictEqual(res.length, 5)
+  test.strictEqual(res.length, 4)
+  test.strictEqual(typeof res[0], 'object')
+  test.deepStrictEqual(res[0].plugins, ['fp', 'jsdoc'])
+  test.ok(res[0].env)
+  test.ok(res[0].rules)
+  test.ok(res[0].extends)
+
+  // the `-jsx` config
+  test.ok(res[2].rules)
+  test.ok(res[2].plugins)
+  test.ok(res[2].rules['jsx-quotes'])
+  test.ok(res[2].parserOptions)
+  test.ok(res[2].parserOptions.ecmaFeatures.jsx === true)
+
+  // todo: uncomment when support Yarn Global
+  // test.ok(res[4])
+  // test.ok(res[4].extends)
+  // test.ok(res[4].parserOptions)
+  done()
+})

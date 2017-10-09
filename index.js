@@ -8,7 +8,7 @@
 'use strict'
 
 const path = require('path')
-const extend = require('extend-shallow')
+const { getInstalledPathSync } = require('get-installed-path')
 
 /**
  * > Babel/Browserify-style resolve of a `plugins` array
@@ -65,9 +65,9 @@ const resolvePluginsSync = (plugins, opts) => {
     return []
   }
 
-  opts = extend({prefix: '', cwd: process.cwd()}, opts)
+  opts = Object.assign({ prefix: '', cwd: process.cwd() }, opts)
 
-  return arrayify(plugins).map(plugin => {
+  return arrayify(plugins).map((plugin) => {
     // e.g. `plugins: ['foo', 'bar', 'baz']`
     if (typeof plugin === 'string') {
       return resolveFromString(opts, plugin)
@@ -104,7 +104,7 @@ const resolvePluginsSync = (plugins, opts) => {
  * @api private
  */
 
-let arrayify = val => {
+let arrayify = (val) => {
   if (!val) return []
   if (Array.isArray(val)) return val
   return [val]
@@ -138,9 +138,9 @@ let arrayify = val => {
  */
 
 const resolveFromString = (opts, plugin) => {
-  let id = `${opts.prefix}${plugin}`
-  let func = require(path.resolve(opts.cwd, id))
+  const func = resolver(opts, plugin)
   let argz = opts.args ? opts.args : [opts.first]
+
   return typeof func === 'function' ? func.apply(opts.context, argz) : func
 }
 
@@ -189,8 +189,9 @@ const resolveFromArray = (opts, plugin) => {
 
   // e.g. `plugins: [ ['foo'], ['bar', opts] ]`
   if (typeof plugin[0] === 'string') {
-    let id = `${opts.prefix}${plugin[0]}`
-    return require(path.resolve(opts.cwd, id)).apply(opts.context, args)
+    const res = resolver(opts, plugin[0])
+
+    return typeof res === 'function' ? res.apply(opts.context, args) : res
   }
   // e.g. `plugins: [ [fn], [fn, opts] ]`
   if (typeof plugin[0] === 'function') {
@@ -204,6 +205,30 @@ const resolveFromArray = (opts, plugin) => {
 
   let msg = 'First item of array should be function, string or object'
   throw new TypeError(msg)
+}
+
+function resolver (opts, item) {
+  if (item.charAt(0) === '.') {
+    return require(path.join(opts.cwd, item))
+  }
+  if (!item.startsWith(opts.prefix)) {
+    item = opts.prefix + item
+  }
+
+  let filepath = null
+  console.log(process.mainModule.paths)
+  try {
+    filepath = getInstalledPathSync(item, { local: true })
+  } catch (e) {
+    try {
+      filepath = getInstalledPathSync(item)
+    } catch (e) {
+      console.log('x')
+      return require(item)
+    }
+  }
+
+  return require(filepath)
 }
 
 module.exports = resolvePluginsSync

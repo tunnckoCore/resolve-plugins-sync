@@ -22,7 +22,7 @@
     "commit": "git-cz"
   },
   "dependencies": {
-    "extend-shallow": "^2.0.1"
+    "get-installed-path": "^4.0.5"
   },
   "devDependencies": {
     "commitizen": "^2.9.2",
