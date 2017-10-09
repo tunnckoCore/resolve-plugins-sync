@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.1.1"></a>
+## [1.1.1](https://github.com/tunnckocore/resolve-plugins-sync/compare/v1.1.0...v1.1.1) (2017-10-09)
+
+
+### Bug Fixes
+
+* **paths:** improve relative paths support ([6abd28d](https://github.com/tunnckocore/resolve-plugins-sync/commit/6abd28d)), closes [#15](https://github.com/tunnckocore/resolve-plugins-sync/issues/15)
+
+
+
 <a name="1.1.0"></a>
 # [1.1.0](https://github.com/tunnckocore/resolve-plugins-sync/compare/v1.0.1...v1.1.0) (2017-10-09)
 
