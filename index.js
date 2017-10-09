@@ -208,14 +208,13 @@ function resolver (opts, item) {
   }
 
   let filepath = null
-  console.log(process.mainModule.paths)
+
   try {
     filepath = getInstalledPathSync(item, { local: true })
   } catch (e) {
     try {
       filepath = getInstalledPathSync(item)
     } catch (e) {
-      console.log('x')
       return require(item)
     }
   }
