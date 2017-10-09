@@ -21,9 +21,7 @@ const { getInstalledPathSync } = require('get-installed-path')
  * The [rolldown][] bundler already using it as default
  * resolution for resolving [rollup][] plugins. :)
  *
- * **Example**
- *
- * ```js
+ * @example
  * const resolve = require('resolve-plugins-sync')
  *
  * // fake
@@ -38,9 +36,7 @@ const { getInstalledPathSync } = require('get-installed-path')
  * ], {
  *   prefix: 'tool-plugin-'
  * })
- * ```
  *
- * @name   resolvePluginsSync
  * @param  {Array|String} [plugins] array of "plugins/transforms/presets" or single string,
  *                                  which is arrayified so returned `result`
  *                                  is always an array
@@ -55,7 +51,8 @@ const { getInstalledPathSync } = require('get-installed-path')
  * @param  {Array} `opts.args` pass custom arguments to the resolved plugin function,
  *                             if given - respected more than `opts.first`
  * @return {Array} `result` resolved plugins, always an array
- * @api public
+ * @name   resolvePluginsSync
+ * @public
  */
 
 const resolvePluginsSync = (plugins, opts) => {
@@ -101,7 +98,7 @@ const resolvePluginsSync = (plugins, opts) => {
  *
  * @param  {Any} `val` some long description
  * @return {Array}
- * @api private
+ * @private
  */
 
 let arrayify = (val) => {
@@ -116,9 +113,7 @@ let arrayify = (val) => {
  * plugin if installed, require it and call it
  * without options been passed.
  *
- * **Example**
- *
- * ```js
+ * @example
  * const resolve = require('resolve-plugins-sync')
  * const plugins = [
  *   'commonjs',
@@ -134,7 +129,7 @@ let arrayify = (val) => {
  *
  * @param  {Object} `opts`
  * @return {String} `plugin`
- * @api private
+ * @private
  */
 
 const resolveFromString = (opts, plugin) => {
@@ -160,9 +155,7 @@ const resolveFromString = (opts, plugin) => {
  * Very much how Babel and Browserify resolves their
  * transforms, presets and plugins.
  *
- * **Example**
- *
- * ```js
+ * @example
  * const resolve = require('resolve-plugins-sync')
  * const plugins = [
  *   'commonjs',
@@ -174,7 +167,6 @@ const resolveFromString = (opts, plugin) => {
  *   prefix: 'rollup-plugin-'
  * })
  * console.log(result) // => Array of objects
- * ```
  *
  * @param  {Object} `opts`
  * @return {String} `plugin`
