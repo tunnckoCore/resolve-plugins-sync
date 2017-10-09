@@ -5,14 +5,14 @@
  * Released under the MIT license.
  */
 
-/* jshint asi:true */
+/* eslint-disable max-len */
 
 'use strict'
 
 const test = require('mukla')
-const resolve = require('./index')
 const towie = require('./fixtures/foo-plugin-two')
 const quxie = require('./fixtures/foo-plugin-quxie')
+const resolve = require('./index')
 
 test('1. return empty array if falsey values or no `plugins` given', (done) => {
   test.strictEqual(resolve().length, 0)
@@ -22,16 +22,16 @@ test('1. return empty array if falsey values or no `plugins` given', (done) => {
   done()
 })
 
-test('2. resolve single argument string as `plugins`', function (done) {
+test('2. resolve single argument string as `plugins`', (done) => {
   const result = resolve('foo-plugin-one', { prefix: './fixtures/' })
   test.strictEqual(result.length, 1)
   test.strictEqual(result[0].name, 'one')
   done()
 })
 
-test('3. resolve if each item in `plugins` is string (+ opts.prefix)', function (done) {
+test('3. resolve if each item in `plugins` is string (+ opts.prefix)', (done) => {
   const res = resolve(['foo-plugin-one', 'foo-plugin-two'], {
-    prefix: './fixtures/'
+    prefix: './fixtures/',
   })
   test.strictEqual(res.length, 2)
 
@@ -45,17 +45,20 @@ test('3. resolve if each item in `plugins` is string (+ opts.prefix)', function 
   done()
 })
 
-test('4. resolve if item in `plugins` is array', function (done) {
-  const res = resolve([
-    ['one', { a: 'b' }],
-    [quxie, { xx: 'yy' }],
-    ['two', { hoo: 'raay' }],
-    ['quxie'],
-    [towie],
-    [{ name: 'barry' }]
-  ], {
-    prefix: './fixtures/foo-plugin-'
-  })
+test('4. resolve if item in `plugins` is array', (done) => {
+  const res = resolve(
+    [
+      ['one', { a: 'b' }],
+      [quxie, { xx: 'yy' }],
+      ['two', { hoo: 'raay' }],
+      ['quxie'],
+      [towie],
+      [{ name: 'barry' }],
+    ],
+    {
+      prefix: './fixtures/foo-plugin-',
+    }
+  )
 
   test.strictEqual(res.length, 6)
 
@@ -81,12 +84,8 @@ test('4. resolve if item in `plugins` is array', function (done) {
   done()
 })
 
-test('5. resolve if item in `plugins` is string, function or object', function (done) {
-  const plugins = resolve([
-    './fixtures/foo-plugin-one',
-    towie,
-    { name: 'bar' }
-  ])
+test('5. resolve if item in `plugins` is string, function or object', (done) => {
+  const plugins = resolve(['./fixtures/foo-plugin-one', towie, { name: 'bar' }])
 
   test.strictEqual(plugins.length, 3)
   test.strictEqual(plugins[0].name, 'one')
@@ -97,11 +96,9 @@ test('5. resolve if item in `plugins` is string, function or object', function (
   done()
 })
 
-test('6. throw err if item is array and 1st arg is not string, object or fn', function (done) {
+test('6. throw err if item is array and 1st arg is not string, object or fn', (done) => {
   function fixture () {
-    resolve([
-      [123, { a: 'b' }]
-    ])
+    resolve([[123, { a: 'b' }]])
   }
 
   test.throws(fixture, TypeError)
@@ -110,11 +107,9 @@ test('6. throw err if item is array and 1st arg is not string, object or fn', fu
   done()
 })
 
-test('7. throw err if item is not array, string, function or object', function (done) {
+test('7. throw err if item is not array, string, function or object', (done) => {
   function fixture () {
-    resolve([
-      123
-    ])
+    resolve([123])
   }
 
   test.throws(fixture, TypeError)
@@ -123,13 +118,10 @@ test('7. throw err if item is not array, string, function or object', function (
   done()
 })
 
-test('8. opts.first for browserify-style transforms where 1st is `filename`, 2nd is `opts`', function (done) {
-  const actual = resolve([
-    ['one', { ccc: 'aaa' }],
-    ['two', { zzz: 'xxx' }]
-  ], {
+test('8. opts.first for browserify-style transforms where 1st is `filename`, 2nd is `opts`', (done) => {
+  const actual = resolve([['one', { ccc: 'aaa' }], ['two', { zzz: 'xxx' }]], {
     prefix: './fixtures/foo-plugin-',
-    first: 'some/example/filepath.js'
+    first: 'some/example/filepath.js',
   })
 
   test.strictEqual(actual.length, 2)
@@ -140,12 +132,9 @@ test('8. opts.first for browserify-style transforms where 1st is `filename`, 2nd
   done()
 })
 
-test('9. if passed opts.args respect it more than per plugin options', function (done) {
-  const ret = resolve([
-    [towie, { x: 'b' }],
-    './fixtures/foo-plugin-one'
-  ], {
-    args: ['haha', { hello: 'world' }]
+test('9. if passed opts.args respect it more than per plugin options', (done) => {
+  const ret = resolve([[towie, { x: 'b' }], './fixtures/foo-plugin-one'], {
+    args: ['haha', { hello: 'world' }],
   })
 
   test.strictEqual(ret.length, 2)
@@ -153,5 +142,11 @@ test('9. if passed opts.args respect it more than per plugin options', function 
   test.strictEqual(ret[0].name, 'two')
   test.strictEqual(ret[0].filename, ret[1].filename)
   test.strictEqual(ret[0].opts.hello, ret[1].opts.hello)
+  done()
+})
+
+test('10. should allow to resolve object when item is string', (done) => {
+  const res = resolve(['./fixtures/foo-qux.js'])
+  test.deepStrictEqual(res[0], { name: 'quxie-foo', boogie: 'haha' })
   done()
 })

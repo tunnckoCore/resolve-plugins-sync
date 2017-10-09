@@ -8,12 +8,13 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "lint": "standard --verbose --fix",
-    "pretest": "npm run lint",
+    "format": "prettier **/*.js --config ./.prettierrc --write",
+    "lint": "eslint **/*.js --config ./.eslintrc.json -f codeframe --fix",
+    "pretest": "npm run lint && npm run format",
     "test": "npm run coverage",
     "posttest": "npm run lint:coverage",
     "coverage": "nyc node test.js",
-    "lint:coverage": "nyc check-coverage --lines 100 --branches 100 --statements 100 --functions 100",
+    "lint:coverage": "nyc check-coverage",
     "report-coverage": "nyc report --reporter=text-lcov | coveralls",
     "prerelease": "npm test",
     "release": "standard-version --sign --no-verify",
@@ -27,10 +28,12 @@
     "commitizen": "^2.9.2",
     "coveralls": "^2.11.15",
     "cz-conventional-changelog": "^1.2.0",
+    "eslint": "^4.8.0",
+    "eslint-config-standard-tunnckocore": "^1.0.10",
     "mukla": "^0.4.8",
     "nyc": "^11.0.0",
     "pre-commit": "^1.2.2",
-    "standard": "^10.0.2",
+    "prettier": "^1.7.4",
     "standard-version": "^4.0.0"
   },
   "files": [
@@ -109,15 +112,5 @@
   "engines": {
     "node": ">=4",
     "npm": ">=2"
-  },
-  "eslintConfig": {
-    "extends": "standard",
-    "rules": {
-      "semi": [
-        2,
-        "never"
-      ],
-      "no-extra-semi": 2
-    }
   }
 }

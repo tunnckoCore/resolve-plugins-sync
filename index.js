@@ -7,6 +7,7 @@
 
 'use strict'
 
+const path = require('path')
 const extend = require('extend-shallow')
 
 /**
@@ -64,9 +65,9 @@ const resolvePluginsSync = (plugins, opts) => {
     return []
   }
 
-  opts = extend({ prefix: '' }, opts)
+  opts = extend({prefix: '', cwd: process.cwd()}, opts)
 
-  return arrayify(plugins).map((plugin) => {
+  return arrayify(plugins).map(plugin => {
     // e.g. `plugins: ['foo', 'bar', 'baz']`
     if (typeof plugin === 'string') {
       return resolveFromString(opts, plugin)
@@ -103,7 +104,7 @@ const resolvePluginsSync = (plugins, opts) => {
  * @api private
  */
 
-let arrayify = (val) => {
+let arrayify = val => {
   if (!val) return []
   if (Array.isArray(val)) return val
   return [val]
@@ -138,9 +139,9 @@ let arrayify = (val) => {
 
 const resolveFromString = (opts, plugin) => {
   let id = `${opts.prefix}${plugin}`
-  let func = require(id)
+  let func = require(path.resolve(opts.cwd, id))
   let argz = opts.args ? opts.args : [opts.first]
-  return func.apply(opts.context, argz)
+  return typeof func === 'function' ? func.apply(opts.context, argz) : func
 }
 
 /**
@@ -189,7 +190,7 @@ const resolveFromArray = (opts, plugin) => {
   // e.g. `plugins: [ ['foo'], ['bar', opts] ]`
   if (typeof plugin[0] === 'string') {
     let id = `${opts.prefix}${plugin[0]}`
-    return require(id).apply(opts.context, args)
+    return require(path.resolve(opts.cwd, id)).apply(opts.context, args)
   }
   // e.g. `plugins: [ [fn], [fn, opts] ]`
   if (typeof plugin[0] === 'function') {

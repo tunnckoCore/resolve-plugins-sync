@@ -9,6 +9,6 @@ module.exports = (name, body) => (filename, opts) => {
     name: name,
     body: body,
     opts: opts,
-    filename: filename
+    filename: filename,
   }
 }
