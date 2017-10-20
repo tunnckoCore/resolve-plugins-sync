@@ -134,7 +134,7 @@ let arrayify = (val) => {
 
 const resolveFromString = (opts, plugin) => {
   const func = resolver(opts, plugin)
-  const first = opts.hasOwnProperty('first') ? opts.first : []
+  const first = opts.hasOwnProperty('first') ? [opts.first] : []
   let argz = opts.args ? opts.args : first
 
   return typeof func === 'function' ? func.apply(opts.context, argz) : func
