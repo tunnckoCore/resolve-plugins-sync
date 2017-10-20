@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.1.3"></a>
+## [1.1.3](https://github.com/tunnckocore/resolve-plugins-sync/compare/v1.1.2...v1.1.3) (2017-10-20)
+
+
+### Bug Fixes
+
+* **args:** pass 'opts.first' if exists in opts object ([7491a87](https://github.com/tunnckocore/resolve-plugins-sync/commit/7491a87))
+
+
+
 <a name="1.1.2"></a>
 ## [1.1.2](https://github.com/tunnckocore/resolve-plugins-sync/compare/v1.1.1...v1.1.2) (2017-10-09)
 
